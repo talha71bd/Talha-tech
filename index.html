@@ -52,12 +52,14 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <a href="https://docs.google.com/spreadsheets/d/1zJ7UnS-yFWaJhyyAKZlUsMRn7Uip0KHpvHf1Js11HpM/edit?usp=drivesdk" target="_blank" title="সরাসরি গুগল শিট খুলুন" class="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-400 border border-emerald-500/40 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow">
-        <i data-lucide="sheet" class="w-4 h-4"></i> শিট
-      </a>
-      <button onclick="exportData()" title="অফলাইন ব্যাকআপ" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 active:scale-95 p-2 rounded-xl text-xs font-bold border border-slate-700">
-        <i data-lucide="download" class="w-4 h-4"></i>
+      <!-- লাইভ শিট সিঙ্ক স্ট্যাটাস বাটন -->
+      <button onclick="fetchLiveDataFromGoogleSheet()" id="btnSyncHeader" class="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-400 border border-emerald-500/40 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow active:scale-95 transition">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" id="syncPulse"></span>
+        <span id="syncHeaderText">শিট সিঙ্ক</span>
       </button>
+      <a href="https://docs.google.com/spreadsheets/d/1zJ7UnS-yFWaJhyyAKZlUsMRn7Uip0KHpvHf1Js11HpM/edit?usp=drivesdk" target="_blank" title="সরাসরি গুগল শিট খুলুন" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl text-xs font-bold border border-slate-700">
+        <i data-lucide="external-link" class="w-4 h-4"></i>
+      </a>
     </div>
   </header>
 
@@ -69,7 +71,7 @@
   <!-- মূল কন্টেন্ট কনটেইনার -->
   <main class="max-w-md mx-auto p-3.5 space-y-4">
 
-    <!-- ================= ১. ড্যাশবোর্ড / হোম সেকশন (উন্নত ফিচারসহ) ================= -->
+    <!-- ================= ১. ড্যাশবোর্ড / হোম সেকশন ================= -->
     <section id="sec-dashboard" class="space-y-3.5">
       <!-- শপ ব্যানার -->
       <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-blue-700 to-slate-900 p-4 shadow-xl border border-indigo-500/30">
@@ -85,7 +87,7 @@
         </div>
       </div>
 
-      <!-- দ্রুত অ্যাকশন বাটনসমূহ (Quick Action Tiles) -->
+      <!-- দ্রুত অ্যাকশন বাটনসমূহ -->
       <div class="grid grid-cols-3 gap-2">
         <button onclick="switchTab('pos')" class="bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-500/30 p-2.5 rounded-2xl flex flex-col items-center gap-1 active:scale-95 transition">
           <i data-lucide="shopping-cart" class="w-5 h-5 text-cyan-400"></i>
@@ -148,7 +150,7 @@
         </div>
       </div>
 
-      <!-- কম স্টকের সতর্কতা (১ বা ২ পিস বাকি থাকলে হাইলাইট) -->
+      <!-- কম স্টকের সতর্কতা (১ বা ২ পিস বাকি) -->
       <div id="lowStockAlertWrapper" class="hidden bg-rose-950/30 border-2 border-rose-500/50 rounded-2xl p-4 shadow-lg shadow-rose-950/50">
         <div class="flex items-center gap-2 text-rose-400 font-black text-sm">
           <i data-lucide="alert-octagon" class="w-5 h-5 text-rose-400 animate-pulse"></i>
@@ -252,7 +254,7 @@
       </div>
     </section>
 
-    <!-- ================= ৩. সম্পূর্ণ প্রোডাক্ট ক্যাটালগ ও স্টক ভিউ (নতুন ফিচার) ================= -->
+    <!-- ================= ৩. সম্পূর্ণ প্রোডাক্ট ক্যাটালগ ও স্টক ভিউ ================= -->
     <section id="sec-allproducts" class="hidden space-y-3.5">
       <div class="bg-slate-900/95 border border-slate-800 p-4 rounded-3xl shadow-sm space-y-3">
         <div class="flex justify-between items-center">
@@ -267,7 +269,7 @@
           </button>
         </div>
 
-        <!-- সার্চ ও ক্যাটাগরি ফিল্টার -->
+        <!-- সার্চ ও ফিল্টার -->
         <div class="grid grid-cols-2 gap-2">
           <input type="text" id="catalogSearchInput" oninput="renderFullCatalog()" placeholder="পণ্যের নাম খুঁজুন..." class="w-full text-xs bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none focus:border-cyan-400">
           <select id="catalogCategoryFilter" onchange="renderFullCatalog()" class="w-full text-xs bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white outline-none">
@@ -281,7 +283,7 @@
           <span class="text-slate-400">মোট মজুদ: <b class="text-emerald-400" id="catalogTotalStock">০ পিস</b></span>
         </div>
 
-        <!-- পণ্যের তালিকা কার্ডসমূহ -->
+        <!-- পণ্যের তালিকা -->
         <div id="fullCatalogContainer" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
       </div>
     </section>
@@ -352,7 +354,7 @@
       </div>
     </section>
 
-    <!-- ================= ৬. সম্পূর্ণ হিস্ট্রি সেকশন (নতুন সার্চেবল লেজার) ================= -->
+    <!-- ================= ৬. সম্পূর্ণ হিস্ট্রি সেকশন ================= -->
     <section id="sec-history" class="hidden space-y-3.5">
       <div class="bg-slate-900/95 border border-slate-800 p-4 rounded-3xl shadow-sm space-y-3">
         <div class="flex flex-wrap justify-between items-center gap-2">
@@ -365,17 +367,14 @@
           <span class="text-xs bg-slate-800 text-cyan-300 font-mono font-bold px-2.5 py-1 rounded-xl" id="historyCount">০ টি</span>
         </div>
 
-        <!-- সার্চ বক্স -->
         <input type="text" id="historySearchInput" oninput="renderHistoryList()" placeholder="মেমো নং, কাস্টমারের নাম বা মোবাইল দিয়ে খুঁজুন..." class="w-full text-xs bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white outline-none focus:border-cyan-400">
 
-        <!-- হিস্ট্রি লিস্ট কার্ডস -->
         <div id="fullHistoryContainer" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
       </div>
     </section>
 
-    <!-- ================= ৭. পূর্ণাঙ্গ বিজনেস রিপোর্ট ও চার্ট সেকশন (report.html এর সব ফিচার) ================= -->
+    <!-- ================= ৭. পূর্ণাঙ্গ বিজনেস রিপোর্ট ও চার্ট সেকশন ================= -->
     <section id="sec-reports" class="hidden space-y-4">
-      
       <!-- রিপোর্ট হেডার ও ফিল্টার বার -->
       <div class="bg-slate-900/95 border border-slate-800 p-4 rounded-3xl shadow-sm space-y-3">
         <div class="flex justify-between items-center">
@@ -471,7 +470,7 @@
         </div>
       </div>
 
-      <!-- পাইকারি বাজার শপিং সহকারী (স্মার্ট রি-অর্ডার লিস্ট) -->
+      <!-- পাইকারি বাজার শপিং সহকারী -->
       <div class="bg-gradient-to-br from-indigo-950/60 via-slate-900 to-slate-950 border border-indigo-500/40 p-4 rounded-3xl shadow-sm space-y-3">
         <div class="flex justify-between items-center">
           <div>
@@ -490,12 +489,12 @@
       <!-- টপ ৫ সর্বোচ্চ লাভজনক পণ্য -->
       <div class="bg-slate-900/95 border border-slate-800 p-4 rounded-3xl shadow-sm space-y-3">
         <h4 class="text-xs font-black text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i> টপ ৫ সর্বোচ্চ লাভজনক পণ্য (Best Profit Makers)
+          <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i> টপ ৫ সর্বোচ্চ লাভজনক পণ্য
         </h4>
         <div id="topProfitMakersList" class="space-y-2 text-xs"></div>
       </div>
 
-      <!-- পূর্ণাঙ্গ আর্থিক স্টেটমেন্ট টেবিল (P&L Audit) -->
+      <!-- পূর্ণাঙ্গ আর্থিক স্টেটমেন্ট টেবিল -->
       <div class="bg-slate-900/95 border border-slate-800 p-4 rounded-3xl shadow-sm space-y-3">
         <h4 class="text-xs font-black text-slate-200 uppercase tracking-wider flex items-center gap-2">
           <i data-lucide="file-spreadsheet" class="w-4 h-4 text-cyan-400"></i> আর্থিক বিবরণী খতিয়ান (P&L Statement)
@@ -523,7 +522,6 @@
           </div>
         </div>
       </div>
-
     </section>
 
   </main>
@@ -641,51 +639,57 @@
     </div>
   </div>
 
-  <!-- ================= নিচের মোবাইল নেভিগেশন বার ================= -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2.5 px-3 z-40">
-    <div class="max-w-md mx-auto grid grid-cols-6 text-center">
-      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-1 text-cyan-400">
-        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-        <span class="text-[10px] font-bold">হোম</span>
+  <!-- ================= নিচের মোবাইল নেভিগেশন বার (৭টি পূর্ণাঙ্গ ট্যাব) ================= -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-1.5 z-40">
+    <div class="max-w-md mx-auto grid grid-cols-7 text-center">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-0.5 text-cyan-400">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span class="text-[9px] font-bold">হোম</span>
       </button>
 
-      <button onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-        <span class="text-[10px] font-bold">বিক্রি</span>
+      <button onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+        <span class="text-[9px] font-bold">বিক্রি</span>
       </button>
 
-      <button onclick="switchTab('allproducts')" id="nav-allproducts" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-        <i data-lucide="boxes" class="w-5 h-5"></i>
-        <span class="text-[10px] font-bold">সব পণ্য</span>
+      <button onclick="switchTab('allproducts')" id="nav-allproducts" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+        <i data-lucide="boxes" class="w-4 h-4"></i>
+        <span class="text-[9px] font-bold">সব পণ্য</span>
       </button>
 
-      <button onclick="switchTab('inventory')" id="nav-inventory" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-        <i data-lucide="package-plus" class="w-5 h-5"></i>
-        <span class="text-[10px] font-bold">মাল এন্ট্রি</span>
+      <button onclick="switchTab('inventory')" id="nav-inventory" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+        <i data-lucide="package-plus" class="w-4 h-4"></i>
+        <span class="text-[9px] font-bold">এন্ট্রি</span>
       </button>
 
-      <button onclick="switchTab('history')" id="nav-history" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-        <i data-lucide="history" class="w-5 h-5"></i>
-        <span class="text-[10px] font-bold">হিস্ট্রি</span>
+      <button onclick="switchTab('expenses')" id="nav-expenses" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+        <i data-lucide="wallet" class="w-4 h-4"></i>
+        <span class="text-[9px] font-bold">খরচ/বাকি</span>
       </button>
 
-      <button onclick="switchTab('reports')" id="nav-reports" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200">
-        <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-        <span class="text-[10px] font-bold">রিপোর্ট</span>
+      <button onclick="switchTab('history')" id="nav-history" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+        <i data-lucide="history" class="w-4 h-4"></i>
+        <span class="text-[9px] font-bold">হিস্ট্রি</span>
+      </button>
+
+      <button onclick="switchTab('reports')" id="nav-reports" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+        <span class="text-[9px] font-bold">রিপোর্ট</span>
       </button>
     </div>
   </nav>
 
   <!-- ================= সম্পূর্ণ জাভাস্ক্রিপ্ট কন্ট্রোলার ================= -->
   <script>
+    // আপনার সর্বশেষ লাইভ ডিপ্লয়মেন্ট লিঙ্ক
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFBvVpj-289-OFzsmBl5wJNkXIJxFGF-4n4tutKwQmUhA-tg9ktXwwzSAsfPVL7FzUyw/exec";
 
     let db = {
-      products: JSON.parse(localStorage.getItem('tt_master_products')) || [],
-      sales: JSON.parse(localStorage.getItem('tt_master_sales')) || [],
-      expenses: JSON.parse(localStorage.getItem('tt_master_expenses')) || [],
-      dues: JSON.parse(localStorage.getItem('tt_master_dues')) || [],
-      categories: JSON.parse(localStorage.getItem('tt_master_categories')) || ['চার্জিং কেবল', 'চার্জার', 'গ্লাস/কভার', 'ইয়ারফোন/TWS', 'গ্যাজেট']
+      products: [],
+      sales: [],
+      expenses: [],
+      dues: [],
+      categories: ['চার্জিং কেবল', 'চার্জার', 'গ্লাস/কভার', 'ইয়ারফোন/TWS', 'গ্যাজেট']
     };
 
     let cart = [];
@@ -699,6 +703,79 @@
     let chartPayment = null;
     let chartExpense = null;
 
+    // ১. গুগল শিট থেকে লাইভ ডেটা আনার বুলেটপ্রুফ ইঞ্জিন (JSONP + Fetch)
+    function fetchLiveDataFromGoogleSheet() {
+      const btn = document.getElementById('btnFetchSheet');
+      const textHeader = document.getElementById('syncHeaderText');
+      const pulse = document.getElementById('syncPulse');
+
+      if (btn) btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> আনা হচ্ছে...`;
+      if (textHeader) textHeader.innerText = "সিঙ্ক হচ্ছে...";
+      if (pulse) pulse.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+      lucide.createIcons();
+
+      // JSONP কল (যাতে মোবাইলের file:// বা যেকোনো ব্রাউজারে CORS এরর না দেয়)
+      const callbackName = 'onGoogleSheetLoaded_' + Date.now();
+      const scriptTag = document.createElement('script');
+
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        document.body.removeChild(scriptTag);
+
+        if (data && data.status === "success") {
+          // গুগল শিটের আসল ডেটা দিয়ে সম্পূর্ণ আপডেট
+          db.products = data.products || [];
+          db.sales = data.sales || [];
+          db.expenses = data.expenses || [];
+          db.dues = data.dues || [];
+
+          // ক্যাশেও সেভ রাখা যাতে নেট না থাকলেও অন্তত গুগল শিটের লাস্ট ডেটা থাকে
+          saveDB(false); // শিটে পুশ ছাড়াই সেভ
+          renderAll();
+
+          if (textHeader) textHeader.innerText = "শিট লাইভ";
+          if (pulse) pulse.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+          showToast(`✅ গুগল শিট অনুযায়ী ${db.products.length}টি পণ্য ও ${db.sales.length}টি বিক্রি লোড হয়েছে!`);
+        }
+        if (btn) btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4"></i> শিট রিফ্রেশ`;
+        lucide.createIcons();
+      };
+
+      // স্ক্রিপ্ট লোড এরর হ্যান্ডলার
+      scriptTag.onerror = function() {
+        delete window[callbackName];
+        try { document.body.removeChild(scriptTag); } catch(e){}
+        
+        // সাধারণ fetch দিয়ে চেষ্টা
+        fetch(GOOGLE_SCRIPT_URL)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.status === "success") {
+              db.products = data.products || [];
+              db.sales = data.sales || [];
+              db.expenses = data.expenses || [];
+              db.dues = data.dues || [];
+              saveDB(false);
+              renderAll();
+              showToast("✅ গুগল শিটের ডেটা সফলভাবে লোড হয়েছে!");
+            }
+          })
+          .catch(() => {
+            showToast("শিটে কোনো নতুন ডেটা নেই / ক্যাশড ডাটা প্রদর্শিত");
+          })
+          .finally(() => {
+            if (btn) btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4"></i> শিট রিফ্রেশ`;
+            if (textHeader) textHeader.innerText = "শিট লাইভ";
+            if (pulse) pulse.className = "w-2 h-2 rounded-full bg-emerald-400";
+            lucide.createIcons();
+          });
+      };
+
+      scriptTag.src = `${GOOGLE_SCRIPT_URL}?callback=${callbackName}`;
+      document.body.appendChild(scriptTag);
+    }
+
+    // ২. গুগল শিটে ডেটা পাঠানো (POST)
     function syncToGoogleSheet(action, payload) {
       if (!GOOGLE_SCRIPT_URL) return;
       showToast("গুগল শিটে সেভ হচ্ছে...");
@@ -710,39 +787,11 @@
         body: JSON.stringify({ action: action, ...payload })
       }).then(() => {
         showToast("✅ গুগল শিটে লাইভ সেভ হয়েছে!");
+        // সেভ হওয়ার ১ সেকেন্ড পর অটো শিট থেকে আবার রিফ্রেশ
+        setTimeout(fetchLiveDataFromGoogleSheet, 1200);
       }).catch(err => {
         console.warn("অফলাইন মোড", err);
       });
-    }
-
-    function fetchLiveDataFromGoogleSheet() {
-      const btn = document.getElementById('btnFetchSheet');
-      if (btn) btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> আনা হচ্ছে...`;
-      lucide.createIcons();
-
-      fetch(GOOGLE_SCRIPT_URL)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.status === "success") {
-            if (data.products && data.products.length > 0) {
-              db.products = data.products;
-            }
-            if (data.sales && data.sales.length > 0) {
-              db.sales = data.sales;
-            }
-            saveDB();
-            renderAll();
-            showToast("✅ গুগল শিট থেকে লাইভ তথ্য আপডেট হয়েছে!");
-          }
-        })
-        .catch(err => {
-          console.warn("শিট ফেচ এরর:", err);
-          showToast("অফলাইন ডাটা প্রদর্শিত হচ্ছে");
-        })
-        .finally(() => {
-          if (btn) btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4"></i> শিট রিফ্রেশ`;
-          lucide.createIcons();
-        });
     }
 
     function showToast(msg) {
@@ -754,7 +803,7 @@
       }, 2500);
     }
 
-    function saveDB() {
+    function saveDB(shouldPushToSheet = true) {
       localStorage.setItem('tt_master_products', JSON.stringify(db.products));
       localStorage.setItem('tt_master_sales', JSON.stringify(db.sales));
       localStorage.setItem('tt_master_expenses', JSON.stringify(db.expenses));
@@ -768,14 +817,14 @@
         const sec = document.getElementById(`sec-${t}`);
         if (sec) sec.classList.add('hidden');
         const nav = document.getElementById(`nav-${t}`);
-        if (nav) nav.className = 'flex flex-col items-center gap-1 text-slate-400';
+        if (nav) nav.className = 'flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200';
       });
 
       const currentSec = document.getElementById(`sec-${tabId}`);
       if (currentSec) currentSec.classList.remove('hidden');
 
       const currentNav = document.getElementById(`nav-${tabId}`);
-      if (currentNav) currentNav.className = 'flex flex-col items-center gap-1 text-cyan-400';
+      if (currentNav) currentNav.className = 'flex flex-col items-center gap-0.5 text-cyan-400';
 
       window.scrollTo(0, 0);
 
@@ -988,8 +1037,9 @@
       };
 
       db.sales.push(invoiceRecord);
-      saveDB();
+      saveDB(false);
 
+      // গুগল শিটে রিয়েল-টাইম বিক্রি ও মেমো পাঠানো
       syncToGoogleSheet("saveSale", { sale: invoiceRecord });
 
       openInvoiceModal(invoiceRecord);
@@ -1012,7 +1062,9 @@
       const rows = document.getElementById('memoItemRows');
       let totalCount = 0;
 
-      rows.innerHTML = sale.items.map((it, idx) => {
+      const saleItems = (sale.items && sale.items.length > 0) ? sale.items : [{ name: "পণ্য বিক্রি", unitPrice: sale.totalAmount, qty: 1 }];
+
+      rows.innerHTML = saleItems.map((it, idx) => {
         totalCount += it.qty;
         return `
           <tr class="border-b border-slate-200">
@@ -1058,30 +1110,29 @@
       });
     }
 
-    // ================= সম্পূর্ণ প্রোডাক্ট ক্যাটালগ রেন্ডার (নতুন ফিচার) =================
+    // ================= সম্পূর্ণ প্রোডাক্ট ক্যাটালগ রেন্ডার =================
     function renderFullCatalog() {
       const container = document.getElementById('fullCatalogContainer');
       const searchVal = (document.getElementById('catalogSearchInput').value || '').toLowerCase().trim();
       const catVal = document.getElementById('catalogCategoryFilter').value;
 
-      // ক্যাটাগরি ড্রপডাউন অপশন আপডেট
       const catFilterEl = document.getElementById('catalogCategoryFilter');
       const availableCats = Array.from(new Set(db.products.map(p => p.category || 'এক্সেসরিজ')));
       catFilterEl.innerHTML = `<option value="all">সব ক্যাটাগরি (${db.products.length})</option>` + 
         availableCats.map(c => `<option value="${c}" ${c === catVal ? 'selected' : ''}>${c}</option>`).join('');
 
       let filtered = db.products.filter(p => {
-        const matchName = p.name.toLowerCase().includes(searchVal);
+        const matchName = (p.name || '').toLowerCase().includes(searchVal);
         const matchCat = (catVal === 'all') || (p.category === catVal);
         return matchName && matchCat;
       });
 
-      const totalQty = filtered.reduce((a, p) => a + p.qty, 0);
+      const totalQty = filtered.reduce((a, p) => a + (Number(p.qty) || 0), 0);
       document.getElementById('catalogTotalItems').innerText = `${filtered.length} টি পণ্য`;
       document.getElementById('catalogTotalStock').innerText = `${totalQty} পিস`;
 
       if (filtered.length === 0) {
-        container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">কোনো পণ্য পাওয়া যায়নি</p>`;
+        container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">গুগল শিটে কোনো পণ্য পাওয়া যায়নি</p>`;
         return;
       }
 
@@ -1105,7 +1156,7 @@
       `).join('');
     }
 
-    // ================= সম্পূর্ণ হিস্ট্রি লেজার রেন্ডার (নতুন ফিচার) =================
+    // ================= সম্পূর্ণ হিস্ট্রি লেজার রেন্ডার =================
     function renderHistoryList() {
       const container = document.getElementById('fullHistoryContainer');
       const searchVal = (document.getElementById('historySearchInput').value || '').toLowerCase().trim();
@@ -1120,7 +1171,7 @@
       document.getElementById('historyCount').innerText = `${filteredSales.length} টি মেমো`;
 
       if (filteredSales.length === 0) {
-        container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">কোনো মেমো বা বিক্রয় রেকর্ড পাওয়া যায়নি</p>`;
+        container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">গুগল শিটে কোনো বিক্রয় রেকর্ড পাওয়া যায়নি</p>`;
         return;
       }
 
@@ -1132,13 +1183,13 @@
               <span class="text-[10px] text-cyan-400 font-mono font-bold">(${s.invoiceId})</span>
             </div>
             <p class="text-[11px] text-slate-400 mt-1">
-              ${s.date} ${s.time || ''} • <b class="${s.paymentMethod==='Cash'?'text-emerald-400':'text-pink-400'}">${s.paymentMethod==='Cash'?'ক্যাশ':'বিকাশ'}</b> • ${s.items?s.items.length:1}টি পণ্য
+              ${s.date} ${s.time || ''} • <b class="${s.paymentMethod==='Cash'?'text-emerald-400':'text-pink-400'}">${s.paymentMethod==='Cash'?'ক্যাশ':'বিকাশ'}</b> • ${(s.items && s.items.length)?s.items.length:1}টি পণ্য
             </p>
           </div>
           <div class="text-right flex items-center gap-2">
             <div>
-              <p class="font-black text-white text-sm">৳${(s.totalAmount||0).toLocaleString()}</p>
-              <span class="text-[10px] text-emerald-400 font-bold">+৳${(s.profit||0).toLocaleString()} লাভ</span>
+              <p class="font-black text-white text-sm">৳${(Number(s.totalAmount)||0).toLocaleString()}</p>
+              <span class="text-[10px] text-emerald-400 font-bold">+৳${(Number(s.profit)||0).toLocaleString()} লাভ</span>
             </div>
             <button onclick='openInvoiceModal(${JSON.stringify(s)})' class="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 p-2 rounded-xl active:scale-95 border border-cyan-500/30" title="মেমো দেখুন / প্রিন্ট">
               <i data-lucide="receipt" class="w-4 h-4"></i>
@@ -1307,7 +1358,7 @@
 
       if (newItemsToSync.length === 0) { alert("সঠিক নাম ও দাম দিন!"); return; }
 
-      saveDB();
+      saveDB(false);
       syncToGoogleSheet("saveBulkProducts", { products: newItemsToSync });
 
       container.innerHTML = '';
@@ -1333,7 +1384,7 @@
       };
 
       db.expenses.push(expObj);
-      saveDB();
+      saveDB(false);
       syncToGoogleSheet("saveExpense", { expense: expObj });
 
       document.getElementById('expAmount').value = '';
@@ -1357,7 +1408,7 @@
       };
 
       db.dues.push(dueObj);
-      saveDB();
+      saveDB(false);
       syncToGoogleSheet("saveDue", { due: dueObj });
 
       document.getElementById('dueCustomer').value = '';
@@ -1369,7 +1420,7 @@
       const d = db.dues.find(x => x.id === id);
       if (d) {
         d.isPaid = true;
-        saveDB();
+        saveDB(false);
         syncToGoogleSheet("markDuePaid", { dueId: id });
       }
     }
@@ -1405,8 +1456,8 @@
         filteredSales = db.sales.filter(s => new Date(s.date) >= sevenDaysAgo);
         filteredExpenses = db.expenses.filter(e => new Date(e.date) >= sevenDaysAgo);
       } else if (currentReportPeriod === 'month') {
-        filteredSales = db.sales.filter(s => s.date.startsWith(currentMonthStr));
-        filteredExpenses = db.expenses.filter(e => e.date.startsWith(currentMonthStr));
+        filteredSales = db.sales.filter(s => s.date && s.date.startsWith(currentMonthStr));
+        filteredExpenses = db.expenses.filter(e => e.date && e.date.startsWith(currentMonthStr));
       }
 
       return { sales: filteredSales, expenses: filteredExpenses };
@@ -1415,17 +1466,17 @@
     function renderFullReports() {
       const { sales, expenses } = getFilteredReportData();
 
-      const totalSales = sales.reduce((acc, s) => acc + s.totalAmount, 0);
-      const totalProfit = sales.reduce((acc, s) => acc + s.profit, 0);
-      const totalCogs = totalSales - totalProfit;
-      const totalExpense = expenses.reduce((acc, e) => acc + e.amount, 0);
+      const totalSales = sales.reduce((acc, s) => acc + (Number(s.totalAmount) || 0), 0);
+      const totalProfit = sales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
+      const totalCogs = Math.max(0, totalSales - totalProfit);
+      const totalExpense = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
       const netProfit = totalProfit - totalExpense;
 
       const netMarginPct = totalSales > 0 ? ((netProfit / totalSales) * 100).toFixed(1) : 0;
       const markupPct = totalCogs > 0 ? ((totalProfit / totalCogs) * 100).toFixed(1) : 0;
       
-      const totalActiveDues = db.dues.filter(d => !d.isPaid).reduce((acc, d) => acc + d.amount, 0);
-      const allTimeSales = db.sales.reduce((acc, s) => acc + s.totalAmount, 0);
+      const totalActiveDues = db.dues.filter(d => !d.isPaid).reduce((acc, d) => acc + (Number(d.amount) || 0), 0);
+      const allTimeSales = db.sales.reduce((acc, s) => acc + (Number(s.totalAmount) || 0), 0);
       const dueRatioPct = allTimeSales > 0 ? ((totalActiveDues / allTimeSales) * 100).toFixed(1) : 0;
       const avgTicket = sales.length > 0 ? Math.round(totalSales / sales.length) : 0;
 
@@ -1442,10 +1493,12 @@
 
       let itemProfitMap = {};
       sales.forEach(s => {
-        s.items.forEach(it => {
-          const p = (it.unitPrice - (it.buyPrice || 0)) * it.qty;
-          itemProfitMap[it.name] = (itemProfitMap[it.name] || 0) + p;
-        });
+        if (s.items && Array.isArray(s.items) && s.items.length > 0) {
+          s.items.forEach(it => {
+            const p = ((Number(it.unitPrice) || 0) - (Number(it.buyPrice) || 0)) * (Number(it.qty) || 1);
+            itemProfitMap[it.name] = (itemProfitMap[it.name] || 0) + p;
+          });
+        }
       });
 
       const sortedProfits = Object.entries(itemProfitMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
@@ -1468,7 +1521,7 @@
     }
 
     function renderWholesaleShoppingList() {
-      const lowStockItems = db.products.filter(p => p.qty <= 2);
+      const lowStockItems = db.products.filter(p => (Number(p.qty) || 0) <= 2);
       const container = document.getElementById('wholesaleShoppingListContainer');
 
       if (lowStockItems.length === 0) {
@@ -1488,7 +1541,7 @@
     }
 
     function copyWholesaleList() {
-      const lowStockItems = db.products.filter(p => p.qty <= 2);
+      const lowStockItems = db.products.filter(p => (Number(p.qty) || 0) <= 2);
       if (lowStockItems.length === 0) {
         alert("কেনার মতো কোনো মালের ঘাটতি নেই!");
         return;
@@ -1506,8 +1559,8 @@
       let dateSummary = {};
       sales.forEach(s => {
         if (!dateSummary[s.date]) dateSummary[s.date] = { sale: 0, profit: 0 };
-        dateSummary[s.date].sale += s.totalAmount;
-        dateSummary[s.date].profit += s.profit;
+        dateSummary[s.date].sale += (Number(s.totalAmount) || 0);
+        dateSummary[s.date].profit += (Number(s.profit) || 0);
       });
 
       const dates = Object.keys(dateSummary).sort().slice(-7);
@@ -1538,10 +1591,12 @@
 
       let catMap = {};
       sales.forEach(s => {
-        s.items.forEach(it => {
-          const c = it.category || 'এক্সেসরিজ';
-          catMap[c] = (catMap[c] || 0) + (it.unitPrice * it.qty);
-        });
+        if (s.items && Array.isArray(s.items) && s.items.length > 0) {
+          s.items.forEach(it => {
+            const c = it.category || 'এক্সেসরিজ';
+            catMap[c] = (catMap[c] || 0) + ((Number(it.unitPrice) || 0) * (Number(it.qty) || 1));
+          });
+        }
       });
 
       const catLabels = Object.keys(catMap);
@@ -1566,8 +1621,8 @@
         }
       });
 
-      const cashTotal = sales.filter(s => s.paymentMethod === 'Cash').reduce((a, s) => a + s.totalAmount, 0);
-      const mfsTotal = sales.filter(s => s.paymentMethod === 'MFS').reduce((a, s) => a + s.totalAmount, 0);
+      const cashTotal = sales.filter(s => s.paymentMethod === 'Cash').reduce((a, s) => a + (Number(s.totalAmount) || 0), 0);
+      const mfsTotal = sales.filter(s => s.paymentMethod === 'MFS').reduce((a, s) => a + (Number(s.totalAmount) || 0), 0);
 
       if (chartPayment) chartPayment.destroy();
       const ctx3 = document.getElementById('paymentMethodChart').getContext('2d');
@@ -1590,7 +1645,7 @@
 
       let expMap = {};
       expenses.forEach(e => {
-        expMap[e.category] = (expMap[e.category] || 0) + e.amount;
+        expMap[e.category] = (expMap[e.category] || 0) + (Number(e.amount) || 0);
       });
 
       const expLabels = Object.keys(expMap);
@@ -1622,27 +1677,27 @@
       const now = new Date();
 
       const todaySales = db.sales.filter(s => s.date === today);
-      const totalSalesAmt = todaySales.reduce((acc, s) => acc + s.totalAmount, 0);
-      const todayProfit = todaySales.reduce((acc, s) => acc + s.profit, 0);
+      const totalSalesAmt = todaySales.reduce((acc, s) => acc + (Number(s.totalAmount) || 0), 0);
+      const todayProfit = todaySales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
 
-      const cashSales = todaySales.filter(s => s.paymentMethod === 'Cash').reduce((acc, s) => acc + s.totalAmount, 0);
-      const bkashSales = todaySales.filter(s => s.paymentMethod === 'MFS').reduce((acc, s) => acc + s.totalAmount, 0);
+      const cashSales = todaySales.filter(s => s.paymentMethod === 'Cash').reduce((acc, s) => acc + (Number(s.totalAmount) || 0), 0);
+      const bkashSales = todaySales.filter(s => s.paymentMethod === 'MFS').reduce((acc, s) => acc + (Number(s.totalAmount) || 0), 0);
 
       const todayExpenses = db.expenses.filter(e => e.date === today);
-      const totalExpenseAmt = todayExpenses.reduce((acc, e) => acc + e.amount, 0);
+      const totalExpenseAmt = todayExpenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
       const netProfitToday = todayProfit - totalExpenseAmt;
 
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(now.getDate() - 7);
       const weekSales = db.sales.filter(s => new Date(s.date) >= sevenDaysAgo);
-      const weekProfit = weekSales.reduce((acc, s) => acc + s.profit, 0);
-      const weekExpenses = db.expenses.filter(e => new Date(e.date) >= sevenDaysAgo).reduce((acc, e) => acc + e.amount, 0);
+      const weekProfit = weekSales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
+      const weekExpenses = db.expenses.filter(e => new Date(e.date) >= sevenDaysAgo).reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
       const netProfitWeek = weekProfit - weekExpenses;
 
       const currentMonth = now.toISOString().slice(0, 7);
-      const monthSales = db.sales.filter(s => s.date.startsWith(currentMonth));
-      const monthProfit = monthSales.reduce((acc, s) => acc + s.profit, 0);
-      const monthExpenses = db.expenses.filter(e => e.date.startsWith(currentMonth)).reduce((acc, e) => acc + e.amount, 0);
+      const monthSales = db.sales.filter(s => s.date && s.date.startsWith(currentMonth));
+      const monthProfit = monthSales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
+      const monthExpenses = db.expenses.filter(e => e.date && e.date.startsWith(currentMonth)).reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
       const netProfitMonth = monthProfit - monthExpenses;
 
       document.getElementById('dash-profit-today').innerText = `৳ ${netProfitToday.toLocaleString()}`;
@@ -1653,12 +1708,12 @@
       document.getElementById('dash-cash-bkash').innerText = `ক্যাশ: ৳${cashSales} | বিকাশ: ৳${bkashSales}`;
       document.getElementById('dash-today-expense').innerText = `৳ ${totalExpenseAmt.toLocaleString()}`;
 
-      const totalStockVal = db.products.reduce((acc, p) => acc + (p.qty * p.buyPrice), 0);
-      const totalStockCount = db.products.reduce((acc, p) => acc + p.qty, 0);
+      const totalStockVal = db.products.reduce((acc, p) => acc + ((Number(p.qty) || 0) * (Number(p.buyPrice) || 0)), 0);
+      const totalStockCount = db.products.reduce((acc, p) => acc + (Number(p.qty) || 0), 0);
       document.getElementById('dash-stock-value').innerText = `৳ ${totalStockVal.toLocaleString()}`;
-      document.getElementById('dash-total-qty').innerText = `${totalStockCount} পিস মাল আছে`;
+      document.getElementById('dash-total-qty').innerText = `${totalStockCount} পিস বাকি`;
 
-      const lowStockItems = db.products.filter(p => p.qty <= 2);
+      const lowStockItems = db.products.filter(p => (Number(p.qty) || 0) <= 2);
       const lowAlertBox = document.getElementById('lowStockAlertWrapper');
       const lowList = document.getElementById('lowStockList');
       if (lowStockItems.length > 0) {
@@ -1682,9 +1737,9 @@
       } else {
         historyContainer.innerHTML = sortedDates.map(d => {
           const dSales = db.sales.filter(s => s.date === d);
-          const dTotal = dSales.reduce((acc, s) => acc + s.totalAmount, 0);
-          const dGross = dSales.reduce((acc, s) => acc + s.profit, 0);
-          const dExp = db.expenses.filter(e => e.date === d).reduce((acc, e) => acc + e.amount, 0);
+          const dTotal = dSales.reduce((acc, s) => acc + (Number(s.totalAmount) || 0), 0);
+          const dGross = dSales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
+          const dExp = db.expenses.filter(e => e.date === d).reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
           const dNet = dGross - dExp;
 
           return `
@@ -1736,8 +1791,12 @@
 
     document.getElementById('currentDateText').innerText = new Date().toLocaleDateString('bn-BD', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     
-    addProductRow();
-    renderAll();
+    // পেজ ওপেন হওয়ার সাথে সাথেই ১ ক্লিকে সব তৈরি এবং গুগল শিট থেকে লাইভ তথ্য লোড
+    window.addEventListener('DOMContentLoaded', () => {
+      addProductRow();
+      renderAll();
+      fetchLiveDataFromGoogleSheet(); // শুরুতেই গুগল শিটের আসল তথ্য টেনে আনবে
+    });
   </script>
 </body>
 </html>
